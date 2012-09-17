@@ -22,6 +22,7 @@ library
       , binary
       , vector-binary
       , lens
+      , sgd
 
     exposed-modules:
         Data.CRF.Core
@@ -32,6 +33,7 @@ library
       , Data.CRF.FeatSel.Hidden
       , Data.CRF.Model
       , Data.CRF.Inference
+      , Data.CRF.Gradient
 
     ghc-options: -Wall -O2
 

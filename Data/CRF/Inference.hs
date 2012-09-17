@@ -8,27 +8,27 @@ module Data.CRF.Inference
 -- , tagProbs
 -- , tagProbs'
 -- , accuracy
--- , expectedFeaturesIn
--- , zx
--- , zx'
+, expectedFeaturesIn
+, zx
+, zx'
 ) where
 
-import Data.List (maximumBy)
-import Data.Function (on)
+-- import Data.List (maximumBy)
+-- import Data.Function (on)
 import qualified Data.Array as A
 import qualified Data.Vector as V
-import qualified Data.Vector.Unboxed as U
+-- import qualified Data.Vector.Unboxed as U
 
-import Control.Parallel.Strategies (rseq, parMap)
+-- import Control.Parallel.Strategies (rseq, parMap)
 import Control.Parallel (par, pseq)
-import GHC.Conc (numCapabilities)
+-- import GHC.Conc (numCapabilities)
 import qualified Data.Number.LogFloat as L
 
 import qualified Data.CRF.DP as DP
 -- import Data.CRF.Util (partition)
 -- import Data.CRF.LogMath (logSum, mInf)
 import Data.CRF.Core
-import Data.CRF.Feature
+-- import Data.CRF.Feature
 import Data.CRF.Model
 
 type ProbArray = Int -> Int -> L.LogFloat
@@ -105,16 +105,16 @@ zx crf = zxBeta . backward sum crf
 zx' :: Model -> Xs -> L.LogFloat
 zx' crf sent = zxAlpha sent (forward sum crf sent)
 
---------------------------------------------------------------
-argmax :: Ord b => (a -> b) -> [a] -> Maybe (a, b)
-argmax f [] = Nothing
-argmax f xs =
-    Just $ foldl1 choice $ map (\x -> (x, f x)) xs
-  where
-    choice (x1, v1) (x2, v2)
-        | v1 > v2 = (x1, v1)
-        | otherwise = (x2, v2)
-
+-- --------------------------------------------------------------
+-- argmax :: Ord b => (a -> b) -> [a] -> Maybe (a, b)
+-- argmax f [] = Nothing
+-- argmax f xs =
+--     Just $ foldl1 choice $ map (\x -> (x, f x)) xs
+--   where
+--     choice (x1, v1) (x2, v2)
+--         | v1 > v2 = (x1, v1)
+--         | otherwise = (x2, v2)
+-- 
 -- -- | FIXME: This method is incorrect! Marginal probabilities
 -- -- could be used instead.
 -- dynamicTag :: Model -> Xs -> [Lb]
@@ -219,9 +219,9 @@ argmax f xs =
 --     a = interp sent k       x
 --     b = interp sent (k - 1) y
 
-prob2 :: Model -> ProbArray -> ProbArray -> Xs -> Int -> (Lb -> L.LogFloat)
+prob2 :: Model -> ProbArray -> ProbArray -> Int -> (Lb -> L.LogFloat)
       -> Lb -> Lb -> FeatIx -> L.LogFloat
-prob2 crf alpha beta sent k psi x y ix
+prob2 crf alpha beta k psi x y ix
     = alpha (k - 1) (unLb y) * beta (k + 1) (unLb x)
     * psi x * valueL crf ix / zxBeta beta
 
@@ -231,8 +231,8 @@ prob2 crf alpha beta sent k psi x y ix
 --     [ prob2 crf alpha beta sent k x y
 --     | y <- interpIxs sent (k - 1) ]
 
-prob1 :: Model -> ProbArray -> ProbArray -> Xs -> Int -> Lb -> L.LogFloat
-prob1 crf alpha beta sent k x' =
+prob1 :: ProbArray -> ProbArray -> Int -> Lb -> L.LogFloat
+prob1 alpha beta k x' =
     let x = unLb x'
     in  alpha k x * beta (k + 1) x / zxBeta beta
 
@@ -243,8 +243,8 @@ expectedFeaturesOn crf alpha beta sent k =
     tFeats ++ oFeats
   where
     psi = computePsi crf sent k
-    pr1 = prob1 crf alpha beta sent k
-    pr2 = prob2 crf alpha beta sent k psi
+    pr1 = prob1     alpha beta k
+    pr2 = prob2 crf alpha beta k psi
 
     oFeats = [ (ix, pr1 x) 
              | o <- unX (sent V.! k)
@@ -260,11 +260,11 @@ expectedFeaturesOn crf alpha beta sent k =
             , (y, ix) <- prevIxs crf x ]
 
 expectedFeaturesIn :: Model -> Xs -> [(FeatIx, L.LogFloat)]
-expectedFeaturesIn crf sent = zx `par` zx' `pseq` zx `pseq`
+expectedFeaturesIn crf sent = zxF `par` zxB `pseq` zxF `pseq`
     concat [expectedOn k | k <- [0 .. V.length sent - 1] ]
   where
     expectedOn = expectedFeaturesOn crf alpha beta sent
     alpha = forward sum crf sent
     beta = backward sum crf sent
-    zx  = zxAlpha sent alpha
-    zx' = zxBeta beta
+    zxF = zxAlpha sent alpha
+    zxB = zxBeta beta

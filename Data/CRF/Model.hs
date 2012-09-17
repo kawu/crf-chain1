@@ -4,6 +4,7 @@ module Data.CRF.Model
 , lbSet
 , valueL
 , featToIx
+, featToInt
 , sgValue
 , sgIxs
 , obIxs
