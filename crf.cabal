@@ -1,0 +1,40 @@
+name:               crf
+version:            0.0.1.0
+synopsis:           Linear-chain conditional random fields
+license:            BSD3
+license-file:       LICENSE
+cabal-version:      >= 1.6
+author:             Jakub Waszczuk
+maintainer:         waszczuk.kuba@gmail.com
+homepage:           https://github.com/kawu/crf
+build-type:         Simple
+
+library
+    build-depends:
+        base >= 4 && < 5
+      , containers
+      , vector
+      , array
+      , random
+      , parallel
+      , logfloat
+      , monad-codec
+      , binary
+      , vector-binary
+      , lens
+
+    exposed-modules:
+        Data.CRF.Core
+      , Data.CRF.Labeled
+      , Data.CRF.Codec
+      , Data.CRF.Feature
+      , Data.CRF.FeatSel.Present
+      , Data.CRF.FeatSel.Hidden
+      , Data.CRF.Model
+      , Data.CRF.Inference
+
+    ghc-options: -Wall -O2
+
+source-repository head
+    type: git
+    location: git://github.com/kawu/crf.git
