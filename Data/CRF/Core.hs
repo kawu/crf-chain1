@@ -22,9 +22,9 @@ module Data.CRF.Core
 import Data.Vector.Generic.Base
 import Data.Vector.Generic.Mutable
 import Data.Binary (Binary)
+import Data.Ix (Ix)
 import qualified Data.Vector as V
 import qualified Data.Vector.Unboxed as U
-import qualified Data.Array as A
 
 -- | An observation.
 newtype Ob = Ob { unOb :: Int }
@@ -34,7 +34,8 @@ newtype Ob = Ob { unOb :: Int }
 -- | A label.
 newtype Lb = Lb { unLb :: Int }
     deriving ( Show, Read, Eq, Ord, Binary
-             , Vector U.Vector, MVector U.MVector, U.Unbox )
+             , Vector U.Vector, MVector U.MVector, U.Unbox
+	     , Num, Ix )
 
 -- | A feature index.  To every model feature a unique index is assigned.
 newtype FeatIx = FeatIx { unFeatIx :: Int }
