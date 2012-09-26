@@ -10,7 +10,7 @@ import Control.Applicative ((<$>), (<*>), pure)
 import Data.Maybe (catMaybes)
 import qualified Data.Vector as V
 import qualified Control.Monad.Codec as C
-import Control.Lens (_1, _2)
+import Data.Lens.Common (fstLens, sndLens)
 
 import Data.CRF.Core
 import Data.CRF.Labeled
@@ -19,17 +19,17 @@ type Codec a b = (C.AtomCodec a, C.AtomCodec b)
 
 encodeWord :: Ord a => Codec a b -> [a] -> X
 encodeWord codec word = C.evalCodec codec $ do
-    mkX . map Ob . catMaybes <$> mapM (C.maybeEncode _1) word
+    mkX . map Ob . catMaybes <$> mapM (C.maybeEncode fstLens) word
 
 encodeWord' :: (Ord a, Ord b) => Codec a b -> Labeled a b -> (X, Y)
 encodeWord' codec word = C.evalCodec codec $ do
-    x <- mkX . map Ob . catMaybes <$> mapM (C.maybeEncode _1) (obs word)
+    x <- mkX . map Ob . catMaybes <$> mapM (C.maybeEncode fstLens) (obs word)
     y <- mkY <$> sequence
     	[ (,) <$> encodeL lb <*> pure pr
 	| (lb, pr) <- choice word ]
     return (x, y)
   where
-    encodeL y = C.maybeEncode _2 y >>= \mi -> case mi of
+    encodeL y = C.maybeEncode sndLens y >>= \mi -> case mi of
         Nothing -> error "encodeWord': unknown label"
         Just i  -> return (Lb i)
 
