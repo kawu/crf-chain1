@@ -10,6 +10,8 @@ import qualified Data.Map as M
 
 -- | Labeled word: set of observations + chosen labels with
 -- assigned probabilities.
+-- TODO: probabilities in log scale or not?! Rather not, check
+-- if they are "logged" afterwards...
 data Labeled a b = Labeled
     { obs       :: [a]
     , choice    :: [(b, Double)] }

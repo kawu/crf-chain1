@@ -1,5 +1,7 @@
 module Data.CRF.Codec
 ( Codec
+, mkCodec
+, updateCodec
 , encodeWord
 , encodeSent
 , encodeWord'
@@ -43,3 +45,14 @@ encodeSent' codec ws =
     ps = map (encodeWord' codec) ws
     xs = map fst ps
     ys = map snd ps
+
+updateCodec :: (Ord a, Ord b) => Codec a b -> [Labeled a b] -> Codec a b
+updateCodec codec = C.execCodec codec . mapM_ updateWord
+
+mkCodec :: (Ord a, Ord b) => [Labeled a b] -> Codec a b
+mkCodec = updateCodec (C.empty, C.empty)
+
+updateWord :: (Ord a, Ord b) => Labeled a b -> C.Codec (Codec a b) ()
+updateWord word = do
+    mapM_ (C.encode' fstLens) (obs word)
+    sequence_ [C.encode sndLens y | (y, _) <- choice word]
