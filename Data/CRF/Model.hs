@@ -92,7 +92,8 @@ fromList fs =
             (map fst fs)
             (map FeatIx [0..])
     
-        obSet  = nub $ concatMap (featObs . fst) fs
+        _obSet  = nub $ concatMap (featObs . fst) fs
+        _obNum = length _obSet
         _lbSet = nub $ concatMap (featLbs . fst) fs
         _lbNum = length _lbSet
 
@@ -112,7 +113,7 @@ fromList fs =
             [ (unLb y, (x, featToIx crf feat))
             | feat@(TFeature x y) <- tFeats ]
 
-        _obIxsV = adjVects _lbNum
+        _obIxsV = adjVects _obNum
             [ (unOb o, (x, featToIx crf feat))
             | feat@(OFeature o x) <- oFeats ]
 
@@ -136,7 +137,7 @@ fromList fs =
 
         crf = Model _values _ixMap _lbNum _sgIxsV _obIxsV _prevIxsV _nextIxsV
     in  checkSet (map unLb _lbSet)
-      . checkSet (map unOb obSet)
+      . checkSet (map unOb _obSet)
       $ crf
 
 mkModel :: [Feature] -> Model

@@ -1,5 +1,5 @@
 name:               crf
-version:            0.1.0
+version:            0.2.0
 synopsis:           Linear-chain conditional random fields
 license:            BSD3
 license-file:       LICENSE
@@ -34,6 +34,10 @@ library
       , Data.CRF.Model
       , Data.CRF.Inference
       , Data.CRF.Gradient
+
+    other-modules:
+        Data.CRF.DP
+        Data.CRF.Util
 
     ghc-options: -Wall -O2
 
