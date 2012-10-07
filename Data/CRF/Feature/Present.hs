@@ -1,4 +1,4 @@
-module Data.CRF.FeatSel.Present
+module Data.CRF.Feature.Present
 ( presentFeats
 , presentOFeats
 , presentTFeats
@@ -10,9 +10,9 @@ import qualified Data.Vector as V
 import Data.CRF.Core
 import Data.CRF.Feature
 
-presentOFeats :: Dataset X Y -> [Feature]
+presentOFeats :: [(Xs, Ys)] -> [Feature]
 presentOFeats ds =
-    concatMap sentOFeats $ V.toList ds
+    concatMap sentOFeats ds
   where
     sentOFeats (xs, ys) = concatMap oFeatsOn (zip (V.toList xs) (V.toList ys))
     oFeatsOn (x, choice) =
@@ -20,9 +20,9 @@ presentOFeats ds =
         | o <- unX x
         , y <- lbs choice ]
 
-presentTFeats :: Dataset x Y -> [Feature]
+presentTFeats :: [(a, Ys)] -> [Feature]
 presentTFeats ds =
-    concatMap (sentTFeats.snd) (V.toList ds)
+    concatMap (sentTFeats.snd) ds
   where
     sentTFeats ys = concatMap (tFeatsOn ys) [1 .. V.length ys - 1]
     tFeatsOn ys k =
@@ -30,12 +30,12 @@ presentTFeats ds =
         | x <- lbs (ys V.! k)
         , y <- lbs (ys V.! (k-1)) ]
 
-presentSFeats :: Dataset x Y -> [Feature]
+presentSFeats :: [(a, Ys)] -> [Feature]
 presentSFeats ds =
     let sentSFeats s = [SFeature x | x <- lbs (s V.! 0)] 
-    in  concatMap (sentSFeats.snd) $ V.toList ds
+    in  concatMap (sentSFeats.snd) ds
 
-presentFeats :: Dataset X Y -> [Feature]
+presentFeats :: [(Xs, Ys)] -> [Feature]
 presentFeats ds
     =  presentOFeats ds
     ++ presentTFeats ds

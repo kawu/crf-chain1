@@ -1,4 +1,4 @@
-module Data.CRF.FeatSel.Hidden
+module Data.CRF.Feature.Hidden
 ( hiddenFeats
 , hiddenOFeats
 , hiddenTFeats
@@ -11,31 +11,31 @@ import qualified Data.Vector as V
 import Data.CRF.Core
 import Data.CRF.Feature
 
-hiddenOFeats :: Dataset X Y -> [Feature]
+hiddenOFeats :: [(Xs, Ys)] -> [Feature]
 hiddenOFeats ds =
     [ OFeature o x
     | o <- collectObs ds
     , x <- collectLbs ds ]
 
-hiddenTFeats :: Dataset X Y -> [Feature]
+hiddenTFeats :: [(Xs, Ys)] -> [Feature]
 hiddenTFeats ds =
     let xs = collectLbs ds
     in  [TFeature x y | x <- xs, y <- xs]
 
-hiddenSFeats :: Dataset X Y -> [Feature]
+hiddenSFeats :: [(Xs, Ys)] -> [Feature]
 hiddenSFeats = map SFeature . collectLbs
 
-hiddenFeats :: Dataset X Y -> [Feature]
+hiddenFeats :: [(Xs, Ys)] -> [Feature]
 hiddenFeats ds
     =  hiddenOFeats ds
     ++ hiddenTFeats ds
     ++ hiddenSFeats ds
 
-collectObs :: Dataset X Y -> [Ob]
-collectObs = nub . concatMap (sentObs . fst) . V.toList
+collectObs :: [(Xs, Ys)] -> [Ob]
+collectObs = nub . concatMap (sentObs . fst)
 
-collectLbs :: Dataset X Y -> [Lb]
-collectLbs = nub . concatMap (sentLbs . snd) . V.toList
+collectLbs :: [(Xs, Ys)] -> [Lb]
+collectLbs = nub . concatMap (sentLbs . snd)
 
 sentObs :: Xs -> [Ob]
 sentObs = concatMap unX . V.toList

@@ -5,9 +5,6 @@ module Data.CRF.Core
 , Lb (..)
 , FeatIx (..)
 
-, Sent
-, Dataset
-
 , X (..)
 , mkX
 , unX
@@ -42,12 +39,6 @@ newtype FeatIx = FeatIx { unFeatIx :: Int }
     deriving ( Show, Read, Eq, Ord, Binary
              , Vector U.Vector, MVector U.MVector, U.Unbox )
 
--- | A setence.
-type Sent a = V.Vector a
-
--- | A dataset.
-type Dataset a b = V.Vector (Sent a, Sent b)
-
 -- | Simple word represented by a list of its observations.
 newtype X = X { _unX :: U.Vector Ob }
     deriving (Show, Read, Eq, Ord)
@@ -63,10 +54,9 @@ unX = U.toList . _unX
 {-# INLINE unX #-}
 
 -- | Sentence of words.
-type Xs = Sent X
+type Xs = V.Vector X
 
--- | Simple word represented by a list of its observations.
--- It is related to Data.CRF.R type by R's invariant.
+-- | Probability distribution over labels. 
 newtype Y = Y { _unY :: U.Vector (Lb, Double) }
     deriving (Show, Read, Eq, Ord)
 
@@ -81,4 +71,4 @@ unY = U.toList . _unY
 {-# INLINE unY #-}
 
 -- | Sentence of Y (label choices).
-type Ys = Sent Y
+type Ys = V.Vector Y

@@ -25,7 +25,6 @@ import qualified Data.Number.LogFloat as L
 
 import Data.CRF.Core
 import Data.CRF.Feature
--- import           Data.CRF.LogMath (mInf)
 
 type LbIx   = (Lb, FeatIx)
 
@@ -38,9 +37,9 @@ isDummy (FeatIx ix) = ix < 0
 notDummy :: FeatIx -> Bool
 notDummy = not . isDummy
 
-data Model = Model
+data Model = Model {
     -- | Model values.
-    { values    :: U.Vector Double
+      values    :: U.Vector Double
     -- | Indices map.
     , ixMap     :: M.Map Feature FeatIx
     -- | Number of labels.
@@ -54,18 +53,6 @@ data Model = Model
     , prevIxsV  :: V.Vector (U.Vector LbIx)
     -- | Set of "next" labels when known value of the current label.
     , nextIxsV  :: V.Vector (U.Vector LbIx) }
-
--- instance ParamCore Model where
--- 
---     unsafeConsume f xs crf = do
---         values' <- unsafeConsume f xs $ values crf
---         return $ crf { values = values' }
--- 
---     unsafeMap f crf = do
---         values' <- unsafeMap f $ values crf
---         return $ crf { values = values' }
--- 
---     size = size . values
 
 instance Binary Model where
     put crf = do

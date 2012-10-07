@@ -25,15 +25,16 @@ library
       , sgd
 
     exposed-modules:
-        Data.CRF.Core
-      , Data.CRF.Labeled
+        Data.CRF
+      , Data.CRF.Core
+      , Data.CRF.External
       , Data.CRF.Codec
       , Data.CRF.Feature
-      , Data.CRF.FeatSel.Present
-      , Data.CRF.FeatSel.Hidden
+      , Data.CRF.Feature.Present
+      , Data.CRF.Feature.Hidden
       , Data.CRF.Model
+      , Data.CRF.Train
       , Data.CRF.Inference
-      , Data.CRF.Gradient
 
     other-modules:
         Data.CRF.DP

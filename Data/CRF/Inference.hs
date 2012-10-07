@@ -25,9 +25,7 @@ import qualified Data.Number.LogFloat as L
 
 import qualified Data.CRF.DP as DP
 import Data.CRF.Util (partition)
--- import Data.CRF.LogMath (logSum, mInf)
 import Data.CRF.Core
--- import Data.CRF.Feature
 import Data.CRF.Model
 
 type ProbArray = Int -> Lb -> L.LogFloat
