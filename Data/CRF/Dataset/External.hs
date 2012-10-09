@@ -1,11 +1,11 @@
-module Data.CRF.External
+module Data.CRF.Dataset.External
 ( Word
 , Sent
-, Dist
+, Dist (unDist)
 , mkDist
 , WordL
-, SentL
 , annotate
+, SentL
 ) where
 
 import qualified Data.Set as S
@@ -18,14 +18,14 @@ type Word a = S.Set a
 type Sent a = [Word a]
 
 -- | A probability distribution defined over elements of type a.
--- All elements not included in the map have probability equall
+-- All elements not included in the map have probability equal
 -- to 0.
-type Dist a = M.Map a Double
+newtype Dist a = Dist { unDist :: M.Map a Double }
 
--- | Make the probability distribution.
+-- | Construct the probability distribution.
 mkDist :: Ord a => [(a, Double)] -> Dist a
 mkDist =
-    normalize . M.fromListWith (+)
+    Dist . normalize . M.fromListWith (+)
   where
     normalize dist =
         let z = sum (M.elems dist)
@@ -35,9 +35,9 @@ mkDist =
 -- defined over labels.
 type WordL a b = (Word a, Dist b)
 
+-- | Annotate the word with the label.
+annotate :: Word a -> b -> WordL a b
+annotate w x = (w, Dist (M.singleton x 1))
+
 -- | A sentence of labeled words.
 type SentL a b = [WordL a b]
-
--- | Annotate the word with the label.
-annotate :: b -> Word a -> WordL a b
-annotate x w = (w, M.singleton x 1)

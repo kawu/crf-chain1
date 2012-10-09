@@ -18,23 +18,23 @@ library
       , random
       , parallel
       , logfloat
-      , monad-codec
+      , monad-codec >= 0.2 && < 0.3
       , binary
       , vector-binary
       , data-lens
-      , sgd
+      , sgd >= 0.2.1 && < 0.3
 
     exposed-modules:
         Data.CRF
-      , Data.CRF.Core
-      , Data.CRF.External
-      , Data.CRF.Codec
+      , Data.CRF.Dataset.Internal
+      , Data.CRF.Dataset.External
+      , Data.CRF.Dataset.Codec
       , Data.CRF.Feature
       , Data.CRF.Feature.Present
       , Data.CRF.Feature.Hidden
       , Data.CRF.Model
-      , Data.CRF.Train
       , Data.CRF.Inference
+      , Data.CRF.Train
 
     other-modules:
         Data.CRF.DP

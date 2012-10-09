@@ -1,9 +1,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Data.CRF.Core
+module Data.CRF.Dataset.Internal
 ( Ob (..)
 , Lb (..)
-, FeatIx (..)
 
 , X (..)
 , mkX
@@ -34,21 +33,16 @@ newtype Lb = Lb { unLb :: Int }
              , Vector U.Vector, MVector U.MVector, U.Unbox
 	     , Num, Ix )
 
--- | A feature index.  To every model feature a unique index is assigned.
-newtype FeatIx = FeatIx { unFeatIx :: Int }
-    deriving ( Show, Read, Eq, Ord, Binary
-             , Vector U.Vector, MVector U.MVector, U.Unbox )
-
 -- | Simple word represented by a list of its observations.
 newtype X = X { _unX :: U.Vector Ob }
     deriving (Show, Read, Eq, Ord)
 
--- | X constructur.
+-- | X constructor.
 mkX :: [Ob] -> X
 mkX = X . U.fromList
 {-# INLINE mkX #-}
 
--- | X deconstructur symetric to mkX.
+-- | X deconstructor symetric to mkX.
 unX :: X -> [Ob]
 unX = U.toList . _unX
 {-# INLINE unX #-}

@@ -11,19 +11,24 @@ import Control.Applicative ((<*>), (<$>))
 import qualified Data.Vector as V
 import qualified Data.Number.LogFloat as L
 
-import Data.CRF.Core
+import Data.CRF.Dataset.Internal
 
--- | TFeature x y:
---   * x is a label corresponding to the current position,
---   * y is a label corresponding to the previous position.
---   OFeature o x:
---   * o is an observation corresponding to the current position,
---   * x is a label corresponding to the current position.
+-- | A Feature is either an observation feature OFeature o x, which
+-- models relation between observation o and label x assigned to
+-- the same word, or a transition feature TFeature x y (SFeature x
+-- for the first position in the sentence), which models relation
+-- between two subsequent labels, x (on i-th position) and y
+-- (on (i-1)-th positoin).
 data Feature
-    = SFeature {-# UNPACK #-} !Lb
-    | TFeature {-# UNPACK #-} !Lb {-# UNPACK #-} !Lb
-    | OFeature {-# UNPACK #-} !Ob {-# UNPACK #-} !Lb
-    deriving (Show, Read, Eq, Ord)
+    = SFeature
+        {-# UNPACK #-} !Lb
+    | TFeature
+        {-# UNPACK #-} !Lb
+        {-# UNPACK #-} !Lb
+    | OFeature
+        {-# UNPACK #-} !Ob
+        {-# UNPACK #-} !Lb
+    deriving (Show, Eq, Ord)
 
 instance Binary Feature where
     put (SFeature x)   = put (0 :: Int) >> put x
@@ -37,21 +42,23 @@ instance Binary Feature where
             2 -> OFeature <$> get <*> get
 	    _ -> error "Binary Feature: unknown identifier"
 
+-- | Is it a 'SFeature'?
 isSFeat :: Feature -> Bool
 isSFeat (SFeature _) = True
 isSFeat _            = False
+{-# INLINE isSFeat #-}
 
+-- | Is it an 'OFeature'?
 isOFeat :: Feature -> Bool
 isOFeat (OFeature _ _) = True
 isOFeat _              = False
+{-# INLINE isOFeat #-}
 
+-- | Is it a 'TFeature'?
 isTFeat :: Feature -> Bool
 isTFeat (TFeature _ _) = True
 isTFeat _              = False
-
--- | Features present in data together with corresponding probabilities.
---   TODO: consider doing computation in log scale (would have to change
---   Model.Internal.updateWithNumbers too).
+{-# INLINE isTFeat #-}
 
 -- | Transition features with assigned probabilities for given position.
 trFeats :: Ys -> Int -> [(Feature, L.LogFloat)]
@@ -74,6 +81,6 @@ obFeats xs ys k =
 features :: Xs -> Ys -> Int -> [(Feature, L.LogFloat)]
 features xs ys k = trFeats ys k ++ obFeats xs ys k
 
--- | All features with assigned probabilities in given sentence.
+-- | All features with assigned probabilities in given labeled sentence.
 featuresIn :: Xs -> Ys -> [(Feature, L.LogFloat)]
 featuresIn xs ys = concatMap (features xs ys) [0 .. V.length xs - 1]

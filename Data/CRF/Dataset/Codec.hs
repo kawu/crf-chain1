@@ -1,4 +1,4 @@
-module Data.CRF.Codec
+module Data.CRF.Dataset.Codec
 ( Codec
 , CodecM
 
@@ -30,13 +30,16 @@ import qualified Data.Map as M
 import qualified Data.Vector as V
 import qualified Control.Monad.Codec as C
 
-import Data.CRF.Core
-import Data.CRF.External
+import Data.CRF.Dataset.Internal
+import Data.CRF.Dataset.External
 
--- | The codec structure.
+-- | A codec.  The first component is used to encode observations
+-- of type a, the second one is used to encode labels of type b.
 type Codec a b = (C.AtomCodec a, C.AtomCodec b)
 
--- | Type synonym for the codec monad.
+-- | Type synonym for the codec monad.  It is important to notice that by a
+-- codec we denote here a structure of two 'C.AtomCodec's while in the
+-- monad-codec package it denotes a monad.
 type CodecM a b c = C.Codec (Codec a b) c
 
 -- | Encode the labeled word and update the codec.
@@ -46,7 +49,7 @@ encodeWordL'Cu word = do
         mapM (C.encode' fstLens) (S.toList $ fst word)
     y <- mkY <$> sequence
     	[ (,) <$> (Lb <$> C.encode sndLens lb) <*> pure pr
-	| (lb, pr) <- M.toList (snd word) ]
+	| (lb, pr) <- (M.toList . unDist) (snd word) ]
     return (x, y)
 
 -- | Encodec the labeled word and do *not* update the codec.
@@ -57,7 +60,7 @@ encodeWordL'Cn i word = do
         mapM (C.maybeEncode fstLens) (S.toList $ fst word)
     y <- mkY <$> sequence
     	[ (,) <$> encodeL i lb <*> pure pr
-	| (lb, pr) <- M.toList (snd word) ]
+	| (lb, pr) <- (M.toList . unDist) (snd word) ]
     return (x, y)
   where
     encodeL j y = Lb . maybe j id <$> C.maybeEncode sndLens y

@@ -1,51 +1,39 @@
+{-# LANGUAGE RecordWildCards #-}
+
+-- | The module provides data types and manipulation functions for the
+-- first-order, linear-chain conditional random fields.
+
 module Data.CRF
 (
--- * External data representation
+-- * Data types
   Word
 , Sent
-, Dist
-, WordL
-, SentL
+, Dist (unDist)
 , mkDist
+, WordL
 , annotate
+, SentL
 
--- * Internal data representation
-
--- * Encoding and decoding (and codec)
-, Codec
-, mkCodec
-, encodeData
-, encodeDataL
-, encodeSent
-, encodeSentL
-, decodeLabel
-, decodeLabels
-
--- * Feature data type and extraction
-, Feature (..)
-, featuresIn
-, hiddenFeats
-, hiddenOFeats
-, hiddenTFeats
-, hiddenSFeats
-, presentFeats
-, presentOFeats
-, presentTFeats
-, presentSFeats
-
--- * Training the model
-, Model
+-- * CRF
+, CRF (..)
+-- ** Training
 , train
-
--- * Inference with the model
+-- ** Tagging
 , tag
-, accuracy
+
+-- * Feature selection
+, hiddenFeats
+, presentFeats
 ) where
 
-import Data.CRF.External
-import Data.CRF.Codec
-import Data.CRF.Feature
+import Data.CRF.Dataset.External
+import Data.CRF.Dataset.Codec
 import Data.CRF.Feature.Present
 import Data.CRF.Feature.Hidden
 import Data.CRF.Train
-import Data.CRF.Inference
+import qualified Data.CRF.Inference as I
+
+-- | Determine the most probable label sequence within the context of the
+-- given sentence using the model provided by the 'CRF'.
+tag :: (Ord a, Ord b) => CRF a b -> Sent a -> [b]
+tag CRF{..} = decodeLabels codec . I.tag model . encodeSent codec

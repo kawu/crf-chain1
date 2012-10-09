@@ -5,8 +5,7 @@
 -- a part of the CRF model.
 
 module Data.CRF.Inference
-( module Data.CRF.Model
-, tag
+( tag
 , accuracy
 , expectedFeaturesIn
 , zx
@@ -25,14 +24,15 @@ import qualified Data.Number.LogFloat as L
 
 import qualified Data.CRF.DP as DP
 import Data.CRF.Util (partition)
-import Data.CRF.Core
+import Data.CRF.Dataset.Internal
+import Data.CRF.Feature (Feature)
 import Data.CRF.Model
 
 type ProbArray = Int -> Lb -> L.LogFloat
 type AccF = [L.LogFloat] -> L.LogFloat
 
--- | General model methods.
-
+-- | Compute the table of potential products associated with 
+-- observation features for the given sentence position.
 computePsi :: Model -> Xs -> Int -> Lb -> L.LogFloat
 computePsi crf xs i = (A.!) $ A.accumArray (*) 1 bounds
     [ (x, valueL crf ix)
@@ -90,9 +90,13 @@ zxBeta beta = beta 0 0
 zxAlpha :: Xs -> ProbArray -> L.LogFloat
 zxAlpha sent alpha = alpha (V.length sent) 0
 
+-- | Normalization factor computed for the 'Xs' sentence using the
+-- backward computation.
 zx :: Model -> Xs -> L.LogFloat
 zx crf = zxBeta . backward sum crf
 
+-- | Normalization factor computed for the 'Xs' sentence using the
+-- forward computation.
 zx' :: Model -> Xs -> L.LogFloat
 zx' crf sent = zxAlpha sent (forward sum crf sent)
 
@@ -106,8 +110,10 @@ argmax f xs =
         | v1 > v2 = (x1, v1)
         | otherwise = (x2, v2)
 
-dynamicTag :: Model -> Xs -> [Lb]
-dynamicTag crf sent = collectMaxArg (0, 0) [] $ DP.flexible2
+-- | Determine the most probable label sequence given the context of the
+-- CRF model and the sentence.
+tag :: Model -> Xs -> [Lb]
+tag crf sent = collectMaxArg (0, 0) [] $ DP.flexible2
     (0, V.length sent) wordBounds
     (\t k -> withMem (computePsi crf sent k) t k)
   where
@@ -129,10 +135,6 @@ dynamicTag crf sent = collectMaxArg (0, 0) [] $ DP.flexible2
         collect (h, _)
             | h == -1   = reverse acc
             | otherwise = collectMaxArg (i + 1, h) (h:acc) mem
-
-tag :: Model -> Xs -> [Lb]
-tag = dynamicTag
-{-# INLINE tag #-}
 
 -- tagProbs :: Sent s => Model -> s -> [[Double]]
 -- tagProbs crf sent =
@@ -166,15 +168,13 @@ goodAndBad crf sent labels =
         | x == y = (good + 1, bad)
         | otherwise = (good, bad + 1)
 
-type DataSet = [(Xs, Ys)]
-
-goodAndBad' :: Model -> DataSet -> (Int, Int)
+goodAndBad' :: Model -> [(Xs, Ys)] -> (Int, Int)
 goodAndBad' crf dataset =
     let add (g, b) (g', b') = (g + g', b + b')
     in  foldl add (0, 0) [goodAndBad crf x y | (x, y) <- dataset]
 
--- | Parallel accuracy computation.
-accuracy :: Model -> DataSet -> Double
+-- | Compute the accuracy of the model with respect to the labeled dataset.
+accuracy :: Model -> [(Xs, Ys)] -> Double
 accuracy crf dataset =
     let k = numCapabilities
     	parts = partition k dataset
@@ -244,6 +244,11 @@ expectedFeaturesOn crf alpha beta sent k =
             | x <- lbSet crf
             , (y, ix) <- prevIxs crf x ]
 
+-- | A list of 'Feature's (represented by feature indices) defined within
+-- the context of the sentence accompanied by expected probabilities
+-- determined on the basis of the model. 
+--
+-- One feature can occur multiple times in the output list.
 expectedFeaturesIn :: Model -> Xs -> [(FeatIx, L.LogFloat)]
 expectedFeaturesIn crf sent = zxF `par` zxB `pseq` zxF `pseq`
     concat [expectedOn k | k <- [0 .. V.length sent - 1] ]
