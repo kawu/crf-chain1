@@ -1,6 +1,6 @@
-name:               crf
+name:               crf-chain1
 version:            0.2.0
-synopsis:           Linear-chain conditional random fields
+synopsis:           First-order, linear-chain conditional random fields
 license:            BSD3
 license-file:       LICENSE
 cabal-version:      >= 1.6

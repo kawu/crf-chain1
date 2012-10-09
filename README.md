@@ -1,1 +1,1 @@
-Efficient first-order, linera-chain conditional random fields.
+Efficient, first-order, linear-chain conditional random fields.
