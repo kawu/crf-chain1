@@ -1,4 +1,4 @@
-module Data.CRF.Feature
+module Data.CRF.Chain1.Feature
 ( Feature (..)
 , isSFeat
 , isTFeat
@@ -11,7 +11,7 @@ import Control.Applicative ((<*>), (<$>))
 import qualified Data.Vector as V
 import qualified Data.Number.LogFloat as L
 
-import Data.CRF.Dataset.Internal
+import Data.CRF.Chain1.Dataset.Internal
 
 -- | A Feature is either an observation feature OFeature o x, which
 -- models relation between observation o and label x assigned to

@@ -1,4 +1,4 @@
-module Data.CRF.Util
+module Data.CRF.Chain1.Util
 ( partition
 ) where
 

@@ -1,4 +1,4 @@
-module Data.CRF.Dataset.Codec
+module Data.CRF.Chain1.Dataset.Codec
 ( Codec
 , CodecM
 
@@ -30,8 +30,8 @@ import qualified Data.Map as M
 import qualified Data.Vector as V
 import qualified Control.Monad.Codec as C
 
-import Data.CRF.Dataset.Internal
-import Data.CRF.Dataset.External
+import Data.CRF.Chain1.Dataset.Internal
+import Data.CRF.Chain1.Dataset.External
 
 -- | A codec.  The first component is used to encode observations
 -- of type a, the second one is used to encode labels of type b.

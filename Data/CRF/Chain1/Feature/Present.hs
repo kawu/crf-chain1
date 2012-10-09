@@ -5,7 +5,7 @@
 -- You can mix functions defined here with the selection functions
 -- from the "Data.CRF.Chain1.Feature.Hidden" module.
 
-module Data.CRF.Feature.Present
+module Data.CRF.Chain1.Feature.Present
 ( presentFeats
 , presentOFeats
 , presentTFeats
@@ -14,8 +14,8 @@ module Data.CRF.Feature.Present
 
 import qualified Data.Vector as V
 
-import Data.CRF.Dataset.Internal
-import Data.CRF.Feature
+import Data.CRF.Chain1.Dataset.Internal
+import Data.CRF.Chain1.Feature
 
 -- | 'OFeature's which occur in the dataset.
 presentOFeats :: [(Xs, Ys)] -> [Feature]

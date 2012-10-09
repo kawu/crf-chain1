@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE PatternGuards #-}
 
-module Data.CRF.Train
+module Data.CRF.Chain1.Train
 ( CRF (..)
 , train
 ) where
@@ -13,12 +13,12 @@ import qualified Data.Vector as V
 import qualified Numeric.SGD as SGD
 import qualified Numeric.SGD.LogSigned as L
 
-import Data.CRF.Dataset.Internal
-import Data.CRF.Dataset.External (SentL)
-import Data.CRF.Dataset.Codec (mkCodec, Codec, encodeDataL)
-import Data.CRF.Feature (Feature, featuresIn)
-import Data.CRF.Model (Model (..), mkModel, FeatIx (..), featToInt)
-import Data.CRF.Inference (accuracy, expectedFeaturesIn)
+import Data.CRF.Chain1.Dataset.Internal
+import Data.CRF.Chain1.Dataset.External (SentL)
+import Data.CRF.Chain1.Dataset.Codec (mkCodec, Codec, encodeDataL)
+import Data.CRF.Chain1.Feature (Feature, featuresIn)
+import Data.CRF.Chain1.Model (Model (..), mkModel, FeatIx (..), featToInt)
+import Data.CRF.Chain1.Inference (accuracy, expectedFeaturesIn)
 
 -- | A conditional random field model with additional codec used for
 -- data encoding.

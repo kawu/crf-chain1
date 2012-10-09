@@ -1,4 +1,4 @@
-module Data.CRF.Dataset.External
+module Data.CRF.Chain1.Dataset.External
 ( Word
 , Sent
 , Dist (unDist)

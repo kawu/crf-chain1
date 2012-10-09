@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Data.CRF.Dataset.Internal
+module Data.CRF.Chain1.Dataset.Internal
 ( Ob (..)
 , Lb (..)
 

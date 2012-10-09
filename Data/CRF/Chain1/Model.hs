@@ -2,7 +2,7 @@
 
 -- | Internal implementation of the CRF model.
 
-module Data.CRF.Model
+module Data.CRF.Chain1.Model
 ( FeatIx (..)
 , Model (..)
 , mkModel
@@ -30,8 +30,8 @@ import qualified Data.Vector.Unboxed as U
 import qualified Data.Vector as V
 import qualified Data.Number.LogFloat as L
 
-import Data.CRF.Dataset.Internal
-import Data.CRF.Feature
+import Data.CRF.Chain1.Dataset.Internal
+import Data.CRF.Chain1.Feature
 
 -- | A feature index.  To every model feature a unique index is assigned.
 newtype FeatIx = FeatIx { unFeatIx :: Int }

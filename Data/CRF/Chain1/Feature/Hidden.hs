@@ -9,7 +9,7 @@
 -- You can mix functions defined here with the selection functions
 -- from the "Data.CRF.Chain1.Feature.Present" module.
 
-module Data.CRF.Feature.Hidden
+module Data.CRF.Chain1.Feature.Hidden
 ( hiddenFeats
 , hiddenOFeats
 , hiddenTFeats
@@ -19,8 +19,8 @@ module Data.CRF.Feature.Hidden
 import qualified Data.Set as S
 import qualified Data.Vector as V
 
-import Data.CRF.Dataset.Internal
-import Data.CRF.Feature
+import Data.CRF.Chain1.Dataset.Internal
+import Data.CRF.Chain1.Feature
 
 -- | Hidden 'OFeature's which can be constructed based on the dataset.
 hiddenOFeats :: [(Xs, Ys)] -> [Feature]

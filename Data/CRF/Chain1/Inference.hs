@@ -1,10 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 
--- Inference with CRFs.  The assumption is made, that probability of 0
--- (-Infinity potential) is assigned to all transitions which are not
--- a part of the CRF model.
+-- Inference with CRFs.
 
-module Data.CRF.Inference
+module Data.CRF.Chain1.Inference
 ( tag
 , accuracy
 , expectedFeaturesIn
@@ -22,11 +20,10 @@ import Control.Parallel (par, pseq)
 import GHC.Conc (numCapabilities)
 import qualified Data.Number.LogFloat as L
 
-import qualified Data.CRF.DP as DP
-import Data.CRF.Util (partition)
-import Data.CRF.Dataset.Internal
-import Data.CRF.Feature (Feature)
-import Data.CRF.Model
+import qualified Data.CRF.Chain1.DP as DP
+import Data.CRF.Chain1.Util (partition)
+import Data.CRF.Chain1.Dataset.Internal
+import Data.CRF.Chain1.Model
 
 type ProbArray = Int -> Lb -> L.LogFloat
 type AccF = [L.LogFloat] -> L.LogFloat
@@ -244,7 +241,7 @@ expectedFeaturesOn crf alpha beta sent k =
             | x <- lbSet crf
             , (y, ix) <- prevIxs crf x ]
 
--- | A list of 'Feature's (represented by feature indices) defined within
+-- | A list of features (represented by feature indices) defined within
 -- the context of the sentence accompanied by expected probabilities
 -- determined on the basis of the model. 
 --
