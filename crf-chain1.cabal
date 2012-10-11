@@ -1,5 +1,5 @@
 name:               crf-chain1
-version:            0.2.0
+version:            0.2.1
 synopsis:           First-order, linear-chain conditional random fields
 description:
     The library provides efficient implementation of the first-order,

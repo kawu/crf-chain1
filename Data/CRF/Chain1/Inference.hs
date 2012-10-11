@@ -4,12 +4,15 @@
 
 module Data.CRF.Chain1.Inference
 ( tag
+, marginals
 , accuracy
 , expectedFeaturesIn
 , zx
 , zx'
 ) where
 
+import Control.Applicative ((<$>), (<*>), pure)
+import Data.Maybe (catMaybes)
 import Data.List (maximumBy)
 import Data.Function (on)
 import qualified Data.Array as A
@@ -98,11 +101,13 @@ zx' :: Model -> Xs -> L.LogFloat
 zx' crf sent = zxAlpha sent (forward sum crf sent)
 
 --------------------------------------------------------------
-argmax :: Ord b => (a -> b) -> [a] -> (a, b)
-argmax _ [] = error "argmax: null list"
-argmax f xs =
-    foldl1 choice $ map (\x -> (x, f x)) xs
+argmax :: Ord b => (a -> Maybe b) -> [a] -> Maybe (a, b)
+argmax _ [] = Nothing
+argmax f xs
+    | null ys   = Nothing
+    | otherwise = Just $ foldl1 choice ys
   where
+    ys = catMaybes $ map (\x -> (,) <$> pure x <*> f x) xs
     choice (x1, v1) (x2, v2)
         | v1 > v2 = (x1, v1)
         | otherwise = (x2, v2)
@@ -114,24 +119,37 @@ tag crf sent = collectMaxArg (0, 0) [] $ DP.flexible2
     (0, V.length sent) wordBounds
     (\t k -> withMem (computePsi crf sent k) t k)
   where
+    n = V.length sent
+
     wordBounds k
         | k == 0    = (Lb 0, Lb 0)
         | otherwise = (Lb 0, Lb $ lbNum crf - 1)
 
     withMem psi mem k y
-        | k == V.length sent = (-1, 1)
-        | k == 0    = prune . argmax eval $ sgIxs crf
-        | otherwise = prune . argmax eval $ nextIxs crf y
+        | k == n    = Just (-1, 1)  -- -1 is a dummy value
+        | k == 0    = prune <$> argmax eval (sgIxs crf)
+        | otherwise = prune <$> argmax eval (nextIxs crf y)
       where
-        eval (x, ix) = (snd $ mem (k + 1) x) * psi x * valueL crf ix
+        eval (x, ix) = do
+            v <- snd <$> mem (k + 1) x
+            return $ v * psi x * valueL crf ix
         prune ((x, _ix), v) = (x, v)
 
-    collectMaxArg (i, j) acc mem =
-        collect (mem i j)
+    collectMaxArg (i, j) acc mem
+        | i < n     = collect (mem i j)
+        | otherwise = reverse acc
       where
-        collect (h, _)
-            | h == -1   = reverse acc
-            | otherwise = collectMaxArg (i + 1, h) (h:acc) mem
+        collect (Just (h, _)) = collectMaxArg (i + 1, h) (h:acc) mem
+        collect Nothing       = error "tag.collect: Nothing"
+
+-- | Tag probabilities with respect to marginal distributions.
+marginals :: Model -> Xs -> [[(Lb, L.LogFloat)]]
+marginals crf sent =
+    let alpha = forward sum crf sent
+        beta = backward sum crf sent
+    in  [ [ (x, prob1 alpha beta k x)
+          | x <- lbSet crf ]
+        | k <- [0 .. V.length sent - 1] ]
 
 -- tagProbs :: Sent s => Model -> s -> [[Double]]
 -- tagProbs crf sent =
