@@ -182,10 +182,6 @@ featToInt crf = unFeatIx . featToIx crf
 sgValue :: Model -> Lb -> L.LogFloat
 sgValue crf (Lb x) = 
     case unFeatIx (sgIxsV crf U.! x) of
-        -- FIXME: shoule not be -Infinity? It looks like it doesn't
-        -- matter much for know, because that value is ignored anyway,
-        -- but the SFeature which is not a member of the model
-        -- should have probability of 0.
         -1 -> 0		
         ix -> L.logToLogFloat (values crf U.! ix)
 
