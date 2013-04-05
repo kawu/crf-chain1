@@ -77,9 +77,9 @@ notify SGD.SgdArgs{..} crf trainData evalDataM para k
     | doneTotal k == doneTotal (k - 1) = putStr "."
     | Just dataSet <- evalDataM = do
         let x = accuracy (crf { values = para }) dataSet
-        putStrLn ("\n" ++ "[" ++ show (doneTotal k) ++ "] f = " ++ show x)
+        putStrLn ("\n" ++ "[" ++ show (doneTotal k) ++ "] acc = " ++ show x)
     | otherwise =
-        putStrLn ("\n" ++ "[" ++ show (doneTotal k) ++ "] f = #")
+        putStrLn ("\n" ++ "[" ++ show (doneTotal k) ++ "] acc = #")
   where
     doneTotal :: Int -> Int
     doneTotal = floor . done
