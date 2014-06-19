@@ -32,11 +32,12 @@ library
       , random
       , parallel
       , logfloat
-      , monad-codec >= 0.2 && < 0.3
+      , monad-codec         >= 0.2     && < 0.3
       , binary
-      , vector-binary >= 0.1 && < 0.2
+      , vector-binary       >= 0.1     && < 0.2
       , data-lens
-      , sgd >= 0.2.1 && < 0.3
+      , sgd                 >= 0.2.1    && < 0.3
+      , vector-th-unbox     >= 0.2.1    && < 0.3
 
     exposed-modules:
         Data.CRF.Chain1

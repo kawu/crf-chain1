@@ -1,4 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
 
 -- | Internal implementation of the CRF model.
 
@@ -29,14 +32,16 @@ import qualified Data.Map as M
 import qualified Data.Vector.Unboxed as U
 import qualified Data.Vector as V
 import qualified Data.Number.LogFloat as L
+import           Data.Vector.Unboxed.Deriving
 
 import Data.CRF.Chain1.Dataset.Internal
 import Data.CRF.Chain1.Feature
 
 -- | A feature index.  To every model feature a unique index is assigned.
 newtype FeatIx = FeatIx { unFeatIx :: Int }
-    deriving ( Show, Eq, Ord, Binary
-             , G.Vector U.Vector, G.MVector U.MVector, U.Unbox )
+    deriving ( Show, Eq, Ord, Binary) 
+             -- , G.Vector U.Vector, G.MVector U.MVector, U.Unbox )
+derivingUnbox "FeatIx" [t| FeatIx -> Int |] [| unFeatIx |] [| FeatIx |]
 
 -- | A label and a feature index determined by that label.
 type LbIx   = (Lb, FeatIx)
