@@ -1,5 +1,5 @@
 name:               crf-chain1
-version:            0.2.2
+version:            0.3.0
 synopsis:           First-order, linear-chain conditional random fields
 description:
     The library provides efficient implementation of the first-order,
@@ -24,19 +24,21 @@ homepage:           https://github.com/kawu/crf-chain1
 build-type:         Simple
 
 library
+    hs-source-dirs: src
+
     build-depends:
         base >= 4 && < 5
-      , containers
+      , containers          >= 0.5      && < 0.6
       , vector
       , array
       , random
       , parallel
       , logfloat
-      , monad-codec         >= 0.2     && < 0.3
+      , monad-codec         >= 0.2      && < 0.3
       , binary
-      , vector-binary       >= 0.1     && < 0.2
+      , vector-binary       >= 0.1      && < 0.2
       , data-lens
-      , sgd                 >= 0.2.1    && < 0.3
+      , sgd                 >= 0.3.5    && < 0.4
       , vector-th-unbox     >= 0.2.1    && < 0.3
 
     exposed-modules:
