@@ -22,9 +22,12 @@ module Data.CRF.Chain1.Dataset.Codec
 , encodeDataL
 ) where
 
+import Prelude hiding (Word)
+
 import Control.Applicative ((<$>), (<*>), pure)
 import Data.Maybe (catMaybes)
-import Data.Lens.Common (fstLens, sndLens)
+-- import Data.Lens.Common (fstLens, sndLens)
+import Data.Lens.Light (Lens, lens)
 import qualified Data.Set as S
 import qualified Data.Map as M
 import qualified Data.Vector as V
@@ -132,3 +135,14 @@ decodeLabel codec x = C.evalCodec codec $ C.decode sndLens (unLb x)
 decodeLabels :: Ord b => Codec a b -> [Lb] -> [b]
 decodeLabels codec xs = C.evalCodec codec $
     sequence [C.decode sndLens (unLb x) | x <- xs]
+
+
+-- * Stock lenses
+
+fstLens :: Lens (a,b) a
+-- fstLens = Lens $ \(a,b) -> store (\ a' -> (a', b)) a
+fstLens = lens fst (\a' (a, b) -> (a', b))
+
+sndLens :: Lens (a,b) b
+-- sndLens = Lens $ \(a,b) -> store (\ b' -> (a, b')) b
+sndLens = lens snd (\b' (a, b) -> (a, b'))

@@ -1,0 +1,39 @@
+name:                crf-chain1
+version:             0.2.3
+github:              "kawu/crf-chain1"
+license:             BSD3
+author:              "Jakub Waszczuk"
+maintainer:          "waszczuk.kuba@gmail.com"
+copyright:           "2012-2019 IPI PAN, Jakub Waszczuk"
+
+extra-source-files:
+- README.md
+# - ChangeLog.md
+
+# Metadata used when publishing your package
+synopsis:            First-order, linear-chain conditional random fields
+category:            Math
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/kawu/crf-chain1#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- containers
+- vector
+- array
+- random
+- parallel
+- logfloat
+- monad-codec         >= 0.2.1     && < 0.3
+- binary
+# - vector-binary       >= 0.1     && < 0.2
+- vector-binary-instances
+- data-lens-light
+- sgd                 >= 0.2.1    && < 0.3
+- vector-th-unbox     >= 0.2.1    && < 0.3
+
+library:
+  source-dirs: src

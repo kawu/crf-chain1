@@ -34,6 +34,8 @@ module Data.CRF.Chain1
 , presentFeats
 ) where
 
+import Prelude hiding (Word)
+
 import Data.CRF.Chain1.Dataset.External
 import Data.CRF.Chain1.Dataset.Codec
 import Data.CRF.Chain1.Feature.Present

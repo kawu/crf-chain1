@@ -8,6 +8,8 @@ module Data.CRF.Chain1.Dataset.External
 , SentL
 ) where
 
+import           Prelude hiding (Word)
+
 import qualified Data.Set as S
 import qualified Data.Map as M
 
